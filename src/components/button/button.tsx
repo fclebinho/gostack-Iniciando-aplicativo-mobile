@@ -7,7 +7,7 @@ export interface ButtonProperties extends RectButtonProperties {
   children: string;
 }
 
-export const Button: React.FC<ButtonProperties> = ({ children, ...rest }) => {
+const Button: React.FC<ButtonProperties> = ({ children, ...rest }) => {
   return (
     <Container {...rest}>
       <ButtonText>{children}</ButtonText>
