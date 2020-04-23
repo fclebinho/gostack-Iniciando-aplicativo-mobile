@@ -194,7 +194,6 @@
 				82C6FF3C4202BD49FAB6D3E9 /* Pods-appgobarber-tvOSTests.debug.xcconfig */,
 				CE421E8C87A637B455D590E2 /* Pods-appgobarber-tvOSTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -285,7 +284,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1140;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
@@ -584,6 +583,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E9ED15A91FB9ED22D982A911 /* Pods-appgobarber-appgobarberTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -607,6 +607,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 482F21FBE26111192A4CCA8B /* Pods-appgobarber-appgobarberTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = appgobarberTests/Info.plist;
