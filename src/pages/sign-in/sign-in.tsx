@@ -6,12 +6,15 @@ import {
   KeyboardAvoidingView,
   Platform,
   TextInput,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+import * as Yup from 'yup';
 
+import { useAuth } from '../../hooks';
 import {
   Container,
   Title,
@@ -22,14 +25,56 @@ import {
 } from './styles';
 import { Input, Button } from '../../components';
 import logo from '../../assets/logo.png';
+import { getValidatorError } from '../../utils/validator-error';
+
+export interface SignInFormDataProps {
+  email: string;
+  password: string;
+}
 
 export const SignIn: React.FC = () => {
   const navigation = useNavigation();
   const formRef = useRef<FormHandles>(null);
   const inputPasswordRef = useRef<TextInput>(null);
+  const { signIn } = useAuth();
 
-  const handleSignIn = useCallback((data: object) => {
-    console.log(data);
+  const handleSignUp = useCallback(async (data: SignInFormDataProps) => {
+    try {
+      formRef.current?.setErrors({});
+
+      const schema = Yup.object().shape({
+        email: Yup.string()
+          .required('Email é obrigatório')
+          .email('Digite um email válido'),
+        password: Yup.string().required('Senha é obrigatório'),
+      });
+
+      await schema.validate(data, { abortEarly: false });
+      await signIn({
+        email: data.email,
+        password: data.password,
+      });
+
+      // addToast({
+      //   title: 'Login realizado com sucesso.',
+      //   type: 'success',
+      // });
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        const errors = getValidatorError(err);
+        formRef.current?.setErrors(errors);
+      }
+
+      Alert.alert(
+        'Erro na autenticação',
+        'Ocorreu erro ao fazer login, rever suas informações',
+      );
+      // addToast({
+      //   title: 'Erro inesperado',
+      //   description: 'Ocorreu erro no servidor',
+      //   type: 'error',
+      // });
+    }
   }, []);
 
   return (
@@ -49,7 +94,7 @@ export const SignIn: React.FC = () => {
               <Title>Faça seu login</Title>
             </View>
 
-            <Form ref={formRef} onSubmit={handleSignIn}>
+            <Form ref={formRef} onSubmit={handleSignUp}>
               <Input
                 name="email"
                 icon="mail"

@@ -6,15 +6,26 @@ import {
   KeyboardAvoidingView,
   Platform,
   TextInput,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+import * as Yup from 'yup';
 
+import { api } from '../../services';
 import { Container, Title, SignInButton, SignInButtonText } from './styles';
 import { Input, Button } from '../../components';
 import logo from '../../assets/logo.png';
+
+import { getValidatorError } from '../../utils/validator-error';
+
+export interface SignUpFormDataProps {
+  name: string;
+  email: string;
+  password: string;
+}
 
 export const SignUp: React.FC = () => {
   const navigation = useNavigation();
@@ -22,9 +33,53 @@ export const SignUp: React.FC = () => {
   const inputEmailRef = useRef<TextInput>(null);
   const inputPasswordRef = useRef<TextInput>(null);
 
-  const handleSignUp = useCallback((data: object) => {
-    console.log(data);
-  }, []);
+  const handleSignUp = useCallback(
+    async (data: SignUpFormDataProps) => {
+      try {
+        formRef.current?.setErrors({});
+
+        const schema = Yup.object().shape({
+          name: Yup.string().required('Nome é obrigatório'),
+          email: Yup.string()
+            .required('Email é obrigatório')
+            .email('Digite um email válido'),
+          password: Yup.string().min(6, 'Senha deve ter no mínimo 6 dígitos'),
+        });
+
+        await schema.validate(data, { abortEarly: false });
+        await api.post('/users', data);
+
+        Alert.alert(
+          'Cadastro realizado com sucesso',
+          'Você já pode realizar login na aplicação',
+        );
+
+        navigation.goBack();
+
+        // await signIn({
+        //   email: data.email,
+        //   password: data.password,
+        // });
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidatorError(err);
+          formRef.current?.setErrors(errors);
+        }
+
+        Alert.alert(
+          'Erro na autenticação',
+          'Ocorreu erro ao fazer login, rever suas informações',
+        );
+
+        // addToast({
+        //   title: 'Erro inesperado',
+        //   description: 'Ocorreu erro no servidor',
+        //   type: 'error',
+        // });
+      }
+    },
+    [navigation],
+  );
 
   return (
     <>
